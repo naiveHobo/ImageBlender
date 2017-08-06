@@ -124,17 +124,17 @@ float S3_score(vector<Mat> terrains, Mat uTerr){
 	return score;
 }
 
-float totalScore(vector<float> S1, vector<float> S2, vector<float> S3){
-	float s1 = 0, s2 = 0, s3 = 0;
-	for(int i=0;i<S1.size();i++){
-		s1 += S1[i];
+float totalScore(vector<float> S2, vector<float> S3){
+	float /*s1 = 0, */s2 = 0, s3 = 0;
+	for(int i=0;i<S2.size();i++){
+		// s1 += S1[i];
 		s2 += S2[i];
 		s3 += S3[i];
 	}
-	s1 = s1/S1.size();
+	// s1 = s1/S1.size();
 	s2 = s2/S2.size();
 	s3 = s3/S3.size();
-	return (s1+s2+s3)/3;
+	return (/*s1+*/s2+s3)/2;
 }
 
 

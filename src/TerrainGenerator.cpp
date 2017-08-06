@@ -14,7 +14,7 @@
 #include <dirent.h>
 #include "blend.h"
 #include "score.h"
-#include "classify.h"
+// #include "classify.h"
 
 using namespace cv;
 using namespace std;
@@ -30,9 +30,9 @@ vector<Mat> woodTest;
 vector<Mat> concTest;
 vector<char> charTerrain;
 vector<Mat> finalTerrain;
-vector<float> predictLabels;
-vector<float> trueLabels;
-vector<float> S1scores;
+// vector<float> predictLabels;
+// vector<float> trueLabels;
+// vector<float> S1scores;
 vector<float> S2scores;
 vector<float> S3scores;
 
@@ -55,6 +55,8 @@ void loadInputImages(char arg[]){
 		    cout<<fileName;
 		    continue;
 		}
+		else
+			cv::resize(rawImage, rawImage, cv::Size(81, 81));
 		if(_dirent->d_name[0]=='g')
 			grassTest.push_back(rawImage);
 		else if(_dirent->d_name[0]=='m')
@@ -147,54 +149,54 @@ Mat unprocTerrain(){
 	return terrain;
 }
 
-void predict(vector<Mat> imageTest){
-	CvSVM svm;
-	svm.load("/home/naivehobo/Desktop/svm.xml");
+// void predict(vector<Mat> imageTest){
+// 	CvSVM svm;
+// 	svm.load("/home/naivehobo/Desktop/svm.xml");
 
-	int i=0;
-	int cnt=0;
-	int j = 0;
-	int tc[4] = {0}, sc[4] = {0};
+// 	int i=0;
+// 	int cnt=0;
+// 	int j = 0;
+// 	int tc[4] = {0}, sc[4] = {0};
 
-	for(i=0;i<imageTest.size();i++){
-		imageTest[i].convertTo(imageTest[i],CV_32FC1, 1.0/255.0);
-		float c = svm.predict(imageTest[i]);
-		float test;
-		if(charTerrain[j]=='g'){
-			test = 1.0;
-			sc[(int)test-1]++;
-		}
-		else if(charTerrain[j]=='m'){
-			test = 2.0;
-			sc[(int)test-1]++;
-		}
-		else if(charTerrain[j]=='w'){
-			test = 3.0;
-			sc[(int)test-1]++;
-		}
-		else if(charTerrain[j]=='c'){
-			test = 4.0;
-			sc[(int)test-1]++;
-		}
-		trueLabels.push_back(test);
-		predictLabels.push_back(c);
-		if(test==c){
-			cnt++;
-			tc[(int)c-1]++;
-		}
-		if(j==8)
-			j=0;
-		else
-			j++;
-	}
-	/*
-	cout<<"Accuracy: "<<(cnt*100.0)/imageTest.size()<<'%';
-	cout<<"\nGrass Accuracy: "<<(tc[0]*100.0)/sc[0]<<'%';
-	cout<<"\nMud Accuracy: "<<(tc[1]*100.0)/sc[1]<<'%';
-	cout<<"\nWood Accuracy: "<<(tc[2]*100.0)/sc[2]<<'%';
-	cout<<"\nConcrete Accuracy: "<<(tc[3]*100.0)/sc[3]<<'%';
-	*/
-}
+// 	for(i=0;i<imageTest.size();i++){
+// 		imageTest[i].convertTo(imageTest[i],CV_32FC1, 1.0/255.0);
+// 		float c = svm.predict(imageTest[i]);
+// 		float test;
+// 		if(charTerrain[j]=='g'){
+// 			test = 1.0;
+// 			sc[(int)test-1]++;
+// 		}
+// 		else if(charTerrain[j]=='m'){
+// 			test = 2.0;
+// 			sc[(int)test-1]++;
+// 		}
+// 		else if(charTerrain[j]=='w'){
+// 			test = 3.0;
+// 			sc[(int)test-1]++;
+// 		}
+// 		else if(charTerrain[j]=='c'){
+// 			test = 4.0;
+// 			sc[(int)test-1]++;
+// 		}
+// 		trueLabels.push_back(test);
+// 		predictLabels.push_back(c);
+// 		if(test==c){
+// 			cnt++;
+// 			tc[(int)c-1]++;
+// 		}
+// 		if(j==8)
+// 			j=0;
+// 		else
+// 			j++;
+// 	}
+// 	/*
+// 	cout<<"Accuracy: "<<(cnt*100.0)/imageTest.size()<<'%';
+// 	cout<<"\nGrass Accuracy: "<<(tc[0]*100.0)/sc[0]<<'%';
+// 	cout<<"\nMud Accuracy: "<<(tc[1]*100.0)/sc[1]<<'%';
+// 	cout<<"\nWood Accuracy: "<<(tc[2]*100.0)/sc[2]<<'%';
+// 	cout<<"\nConcrete Accuracy: "<<(tc[3]*100.0)/sc[3]<<'%';
+// 	*/
+// }
 
 void processTerrain(Mat terrain){
 	finalTerrain.push_back(featherBlend1(terrain));
@@ -248,19 +250,19 @@ int main(int argc, char *argv[]){
 			imTest.push_back(rawImage.reshape(1, rawImage.rows*rawImage.cols*rawImage.channels()).t());
 		}
 
-		predict(imTest);
-		S1scores.push_back(S1_score(predictLabels, trueLabels));
+		// predict(imTest);
+		// S1scores.push_back(S1_score(predictLabels, trueLabels));
 		S2scores.push_back(S2_score(finalTerrain, uTerr));
 		S3scores.push_back(S3_score(finalTerrain, uTerr));
-		cout<<"S1 Score: "<<S1scores[I];
+		// cout<<"S1 Score: "<<S1scores[I];
 		cout<<"\nS2 Score: "<<S2scores[I];
 		cout<<"\nS3 Score: "<<S3scores[I]<<endl;
 
-		predictLabels.clear();
-		trueLabels.clear();
+		// predictLabels.clear();
+		// trueLabels.clear();
 		charTerrain.clear();
 		finalTerrain.clear();
 	}
-	cout<<"\nTotal Score: "<<totalScore(S1scores, S2scores, S3scores);
+	cout<<"\nTotal Score: "<<totalScore(S2scores, S3scores);
 	return 0;
 }
